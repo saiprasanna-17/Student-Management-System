@@ -1,0 +1,665 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #f4f6f9;
+            color: #111827;
+        }
+
+        /* MAIN LAYOUT */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: #1e293b;
+            color: white;
+            padding: 35px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-size: 23px;
+            line-height: 1.3;
+            margin-bottom: 28px;
+            color: white;
+        }
+
+        .sidebar a {
+            display: block;
+            text-decoration: none;
+            color: #f1f5f9;
+            padding: 15px 12px;
+            margin-bottom: 8px;
+            font-size: 15px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #334155;
+            color: white;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 40px 42px;
+            min-height: 100vh;
+        }
+
+        .main-content > h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            color: #111827;
+        }
+
+        /* DASHBOARD CARDS */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+            max-width: 100%;
+        }
+
+        .card {
+            background: white;
+            padding: 26px;
+            min-height: 170px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h3 {
+            font-size: 19px;
+            margin-bottom: 30px;
+            color: #111827;
+        }
+
+        .card p {
+            font-size: 29px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        /* SECTIONS */
+        .form-section,
+        .student-section,
+        .search-section,
+        .update-section {
+            margin-top: 20px;
+            margin-bottom: 25px;
+            scroll-margin-top: 25px;
+        }
+
+        .form-section h2,
+        .student-section h2,
+        .search-section h2,
+        .update-section h2 {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #111827;
+        }
+
+        /* FORMS */
+        form {
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 9px;
+            color: #111827;
+        }
+
+        input {
+            width: 100%;
+            height: 45px;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.10);
+        }
+
+        input[readonly] {
+            background: #e9edf3;
+            cursor: not-allowed;
+        }
+
+        /* BUTTONS */
+        button {
+            border: none;
+            border-radius: 5px;
+            padding: 11px 19px;
+            font-size: 14px;
+            cursor: pointer;
+            color: white;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .add-btn {
+            background: #2563eb;
+            margin-top: 0;
+        }
+
+        .update-btn {
+            background: #f59e0b;
+            margin-top: 0;
+        }
+
+        .search-btn {
+            background: #2563eb;
+        }
+
+        .edit-btn {
+            background: #f59e0b;
+            padding: 7px 12px;
+            margin: 2px;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            padding: 7px 12px;
+            margin: 2px;
+        }
+
+        /* STUDENT TABLE */
+        .student-section table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+        }
+
+        .student-section th {
+            background: #edf1f6;
+            color: #111827;
+            font-weight: bold;
+        }
+
+        .student-section th,
+        .student-section td {
+            padding: 13px 10px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 1px solid #e1e5eb;
+        }
+
+        .student-section tbody tr:hover {
+            background: #eaf0f8;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        /* SEARCH */
+        .search-box {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-box input {
+            max-width: 350px;
+        }
+
+        #searchResult {
+            margin-top: 18px;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        /* UPDATE SECTION */
+        .update-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media screen and (max-width: 900px) {
+            .sidebar {
+                width: 180px;
+                min-width: 180px;
+                padding: 25px 12px;
+            }
+
+            .main-content {
+                margin-left: 180px;
+                width: calc(100% - 180px);
+                padding: 28px 22px;
+            }
+
+            .cards {
+                gap: 12px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .card h3 {
+                font-size: 16px;
+            }
+        }
+
+        @media screen and (max-width: 550px) {
+            .sidebar {
+                width: 90px;
+                min-width: 90px;
+                padding: 20px 7px;
+            }
+
+            .sidebar h2 {
+                font-size: 14px;
+                overflow-wrap: anywhere;
+            }
+
+            .sidebar a {
+                font-size: 11px;
+                padding: 12px 5px;
+                text-align: center;
+            }
+
+            .main-content {
+                margin-left: 90px;
+                width: calc(100% - 90px);
+                padding: 20px 14px;
+            }
+
+            .main-content > h1 {
+                font-size: 23px;
+            }
+
+            .cards {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 7px;
+            }
+
+            .card {
+                padding: 10px 7px;
+                min-height: 100px;
+                border-radius: 7px;
+            }
+
+            .card h3 {
+                font-size: 11px;
+                margin-bottom: 15px;
+            }
+
+            .card p {
+                font-size: 19px;
+            }
+
+            .form-section h2,
+            .student-section h2,
+            .search-section h2,
+            .update-section h2 {
+                font-size: 19px;
+            }
+
+            label {
+                font-size: 12px;
+            }
+
+            input {
+                height: 36px;
+                font-size: 12px;
+            }
+
+            .student-section th,
+            .student-section td {
+                font-size: 11px;
+                padding: 8px 5px;
+            }
+
+            .edit-btn,
+            .delete-btn {
+                font-size: 10px;
+                padding: 6px;
+            }
+
+            .search-box {
+                flex-wrap: wrap;
+            }
+
+            .search-box input {
+                max-width: 100%;
+            }
+
+            .update-section {
+                padding: 15px;
+            }
+        }
+        
+/* PAGINATION DESIGN */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    width: 100%;
+    margin: 20px 0;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+.pagination button {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    padding: 10px 20px;
+    min-width: 95px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    background: #9ca3af !important;
+    color: #ffffff !important;
+    opacity: 1 !important;
+    cursor: not-allowed;
+}
+
+.pagination span {
+    color: #1e293b;
+    font-weight: bold;
+    min-width: 100px;
+    text-align: center;
+}
+
+.pagination select {
+    padding: 9px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+}
+        
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <h2>Student<br>Management</h2>
+
+        <nav>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#addStudent">Add Student</a>
+            <a href="#viewStudents">View Students</a>
+            <a href="#searchStudent">Search Student</a>
+            <a href="#updateStudent">Update Student</a>
+        </nav>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <h1 id="dashboard">Student Dashboard</h1>
+
+        <!-- DASHBOARD CARDS -->
+        <div class="cards">
+
+            <div class="card">
+                <h3>Total Students</h3>
+                <p id="totalStudents">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Departments</h3>
+                <p id="departmentCount">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Average Marks</h3>
+                <p id="averageMarks">0</p>
+            </div>
+
+        </div>
+
+        <!-- ADD STUDENT -->
+        <section class="form-section" id="addStudent">
+
+            <h2>Add Student</h2>
+
+            <form id="studentForm">
+
+                <div class="form-group">
+                    <label for="id">Student ID</label>
+                    <input type="number"
+                           id="id"
+                           placeholder="Enter Student ID"
+                           min="1"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Student Name</label>
+                    <input type="text"
+                           id="name"
+                           placeholder="Enter Student Name"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <input type="text"
+                           id="department"
+                           placeholder="Enter Department"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="marks">Marks</label>
+                    <input type="number"
+                           id="marks"
+                           placeholder="Enter Marks"
+                           min="0"
+                           max="100"
+                           step="any"
+                           required>
+                </div>
+
+                <button type="submit" class="add-btn">
+                    Add Student
+                </button>
+
+                <p id="addMessage"></p>
+                
+            </form>
+
+        </section>
+
+        <!-- VIEW STUDENTS -->
+        <section class="student-section" id="viewStudents">
+
+            <h2>View Students</h2>
+            
+            <p id="deleteMessage"
+            	style="margin: 10px 0; font-weight: bold;"></p>
+            	
+            	<input
+    				type="text"
+    				id="tableSearch"
+    				placeholder="Search by student name or department..."
+				>
+
+            <div class="table-wrapper">
+            
+                <table>
+                    <thead>
+    					<tr>
+        					<th data-sort="number">ID ↕</th>
+        					<th data-sort="text">Name ↕</th>
+        					<th data-sort="text">Department ↕</th>
+        					<th data-sort="number">Marks ↕</th>
+        					<th>Actions</th>
+    					</tr>
+					</thead>
+
+                    <tbody id="studentTableBody">
+                    </tbody>
+
+                </table>
+                
+                <div class="pagination">
+    				<button type="button" id="prevPage">Previous</button>
+
+    				<span id="pageInfo">Page 1</span>
+
+    				<button type="button" id="nextPage">Next</button>
+
+    				<select id="pageSize">
+        				<option value="10" selected>10 per page</option>
+        				<option value="20">20 per page</option>
+        				<option value="50">50 per page</option>
+    				</select>
+				</div>
+
+            </div>
+
+        </section>
+
+        <!-- SEARCH STUDENT -->
+        <section class="search-section" id="searchStudent">
+
+            <div class="update-section">
+
+                <h2>Search Student</h2>
+
+                <div class="search-box">
+
+                    <input type="number"
+                           id="searchId"
+                           placeholder="Enter Student ID">
+
+                    <button type="button" class="search-btn">
+                        Search
+                    </button>
+
+                </div>
+
+                <div id="searchResult"></div>
+
+            </div>
+
+        </section>
+
+        <!-- UPDATE STUDENT -->
+        <section class="update-section" id="updateStudent">
+
+            <h2>Update Student</h2>
+
+            <form id="updateForm">
+
+                <div class="form-group">
+                    <label for="updateId">Student ID</label>
+                    <input type="number"
+                           id="updateId"
+                           placeholder="Select Edit from the table"
+                           readonly
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="updateName">New Name</label>
+                    <input type="text"
+                           id="updateName"
+                           placeholder="Enter New Name"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="updateDepartment">New Department</label>
+                    <input type="text"
+                           id="updateDepartment"
+                           placeholder="Enter New Department"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="updateMarks">New Marks</label>
+                    <input type="number"
+                           id="updateMarks"
+                           placeholder="Enter New Marks"
+                           min="0"
+                           max="100"
+                           step="any"
+                           required>
+                </div>
+
+                <p id="updateMessage"></p>
+
+                <button type="submit" class="update-btn">
+                    Update Student
+                </button>
+
+            </form>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- JAVASCRIPT -->
+<script src="js/script.js"></script>
+
+</body>
+</html>
